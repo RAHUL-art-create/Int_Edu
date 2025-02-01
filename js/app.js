@@ -421,7 +421,14 @@ function updateThemeIcon(theme) {
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   const themeToggle = document.getElementById('themeToggle');
-  themeToggle.addEventListener('click', toggleTheme);
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
   
   const resizableElements = document.querySelectorAll('.resizable');
   
