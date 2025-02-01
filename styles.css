@@ -1,9 +1,28 @@
 :root {
-  --primary-color: #2196F3;
-  --secondary-color: #1976D2;
+  /* Light theme (default) */
+  --primary-color: #BF2C3D;
+  --secondary-color: #a32434;
   --background-color: #f5f5f5;
   --text-color: #333;
+  --card-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0,0,0,0.1);
+  --hover-color: rgba(191,44,61,0.1);
   --border-radius: 8px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary-color: #BF2C3D;
+  --secondary-color: #d63447;
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --modal-bg: #1e1e1e;
+  --border-color: #333;
+  --shadow-color: rgba(0,0,0,0.3);
+  --hover-color: rgba(191,44,61,0.2);
 }
 
 * {
@@ -16,12 +35,14 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 header {
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 4px var(--shadow-color);
   padding: 1rem 2rem;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 nav {
@@ -70,22 +91,36 @@ main {
 }
 
 .course-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.3s;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
 }
 
 .course-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.course-thumbnail-fallback {
+  width: 100%;
+  height: 200px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: bold;
 }
 
 .course-thumbnail {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  position: relative;
+  background-color: #f0f0f0;
 }
 
 .progress-bar {
@@ -150,7 +185,10 @@ main {
 }
 
 .modal-content {
-  background: linear-gradient(145deg, #ffffff, #f8f8f8);
+  background: var(--modal-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s;
   margin: 2rem auto;
   padding: 2rem;
   border-radius: var(--border-radius);
@@ -159,7 +197,6 @@ main {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.1);
   position: relative;
 }
 
@@ -205,20 +242,46 @@ label {
 input {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   margin-bottom: 1rem;
   font-size: 16px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  font-size: 16px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
 }
 
 .video-entry {
-  background-color: #f8f8f8;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s, border-color 0.3s;
   padding: 1rem;
   border-radius: var(--border-radius);
   margin-bottom: 1rem;
   position: relative;
   border-left: 4px solid var(--primary-color);
-  transition: all 0.3s ease;
 }
 
 .video-entry:hover {
@@ -265,20 +328,38 @@ input {
   margin: 0 auto;
 }
 
+.video-player-container {
+  width: 90%;
+  margin: 0 auto;
+  background: transparent;
+  z-index: 1002;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
 .video-player {
-  width: 100%;
+  width: 90%;
   aspect-ratio: 16/9;
+  margin: 0 auto;
   margin-bottom: 1rem;
+}
+
+.video-player iframe {
+  width: 90%;
+  height: 90%;
+  margin: 5% auto;
+  display: block;
 }
 
 .video-list {
   display: grid;
   gap: 1rem;
-  max-height: 300px;
+  max-height: 250px;
   overflow-y: auto;
   scrollbar-width: none; 
   -ms-overflow-style: none;
   padding-right: 10px;
+  margin-bottom: 1.5rem;
 }
 
 .video-list::-webkit-scrollbar {
@@ -286,15 +367,22 @@ input {
 }
 
 .video-item {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s;
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f8f8f8;
   border-radius: var(--border-radius);
   cursor: pointer;
   position: relative;
   padding-right: 30px;
+}
+
+.video-item:hover {
+  background-color: var(--hover-color);
 }
 
 .video-item.active {
@@ -356,18 +444,32 @@ input {
 }
 
 .payment-info {
-  background-color: #f8f8f8;
-  padding: 1rem;
+  background-color: var(--card-bg);
+  padding: 1.5rem;
   border-radius: var(--border-radius);
-  margin-top: auto;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(0,0,0,0.1);
+  margin-top: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  text-align: center;
 }
 
-.qr-code {
-  max-width: 200px;
-  margin: 1rem auto;
-  display: block;
+.payment-info h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.payment-info p {
+  margin: 0.75rem 0;
+  line-height: 1.5;
+}
+
+.payment-info p:last-child {
+  margin-top: 1rem;
+  font-style: italic;
+  opacity: 0.9;
 }
 
 .dropdown {
@@ -510,50 +612,16 @@ input, textarea {
   padding: 2rem;
 }
 
-.video-player-container {
-  width: 100%;
-  background: transparent;
-  z-index: 1002;
-  transition: all 0.3s ease;
-  position: relative;
+.dimmed .video-player-container {
+  width: 90%;
+  max-width: 90vw;
+  margin: 0 auto;
 }
 
-.resize-handle {
-  position: absolute;
-  background: transparent;
-  z-index: 1000;
-}
-
-.resize-handle-top {
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 10px;
-  cursor: n-resize;
-}
-
-.resize-handle-right {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 10px;
-  cursor: e-resize;
-}
-
-.resize-handle-bottom {
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 10px;
-  cursor: s-resize;
-}
-
-.resize-handle-left {
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 10px;
-  cursor: w-resize;
+.dimmed .video-player {
+  width: 90%;
+  height: 90%;
+  margin: 5% auto;
 }
 
 .lights-off {
@@ -586,27 +654,26 @@ input, textarea {
   z-index: 1001;
 }
 
-.lights-btn {
-  background-color: #333;
-  color: white;
+.theme-toggle {
+  background: none;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius);
+  padding: 0.5rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+  color: var(--text-color);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 0.3s;
+  font-size: 0.9rem;
 }
 
-.lights-btn:hover {
-  background-color: #444;
-}
-
-.lights-btn svg {
+.theme-toggle svg {
   width: 20px;
   height: 20px;
+  transition: transform 0.3s;
+}
+
+.theme-toggle:hover svg {
+  transform: rotate(180deg);
 }
 
 .course-view .modal-content {
@@ -695,7 +762,8 @@ input, textarea {
   }
 
   .video-player {
-    height: 50vw;
+    width: 90%;
+    height: 45vw;
   }
 
   .video-list {
@@ -707,11 +775,8 @@ input, textarea {
   }
 
   .dimmed .video-player-container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    width: 90%;
+    height: 90vh;
   }
 
   .course-header {
@@ -723,7 +788,7 @@ input, textarea {
     font-size: 1.2rem;
   }
 
-  .lights-btn {
+  .theme-toggle {
     margin: 0.5rem 0;
   }
 }
