@@ -7,6 +7,13 @@ export function extractVideoId(url) {
 export function createYouTubeEmbed(url) {
   const videoId = extractVideoId(url);
   return videoId ? 
-    `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0" frameborder="0" allowfullscreen></iframe>` : 
+    `<iframe 
+      width="90%" 
+      height="90%" 
+      src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0" 
+      frameborder="0" 
+      allowfullscreen
+      style="display: block; margin: 5% auto;"
+    ></iframe>` : 
     '<p>Invalid YouTube URL</p>';
 }

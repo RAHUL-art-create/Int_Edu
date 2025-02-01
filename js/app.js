@@ -28,7 +28,7 @@ window.showManageCourses = function() {
   coursesGrid.innerHTML = courses.map(course => `
     <div class="course-card management-view">
       <img 
-        src="${course.videos[0]?.thumbnail || 'https://via.placeholder.com/300x200'}" 
+        src="${course.thumbnail || 'https://via.placeholder.com/300x200'}" 
         alt="${course.name}" 
         class="course-thumbnail"
       >
@@ -74,6 +74,7 @@ window.editCourse = function(courseId) {
   submitBtn.textContent = 'Save Changes';
 
   document.getElementById('courseName').value = course.name;
+  document.getElementById('courseThumbnail').value = course.thumbnail || '';
   document.getElementById('upiId').value = course.upiId;
   document.getElementById('coursePrice').value = course.price;
   document.getElementById('courseId').value = course.id;
@@ -84,7 +85,6 @@ window.editCourse = function(courseId) {
       <h3>Video ${index + 1}</h3>
       <input type="text" class="video-name" value="${video.name}" required>
       <input type="url" class="video-url" value="${video.url}" required>
-      <input type="url" class="thumbnail-url" value="${video.thumbnail || ''}" placeholder="Thumbnail URL (optional)">
       <button type="button" class="delete-video-btn" onclick="window.deleteVideoEntry(this)">Delete Video</button>
     </div>
   `).join('');
@@ -169,7 +169,6 @@ function resetForm() {
       <h3>Video 1</h3>
       <input type="text" class="video-name" placeholder="Video Name" required>
       <input type="url" class="video-url" placeholder="YouTube Video URL" required>
-      <input type="url" class="thumbnail-url" placeholder="Thumbnail URL (optional)">
     </div>
   `;
   videoHistory = [];
@@ -189,7 +188,6 @@ function addVideoEntry() {
     <h3>Video ${videoCount}</h3>
     <input type="text" class="video-name" placeholder="Video Name" required>
     <input type="url" class="video-url" placeholder="YouTube Video URL" required>
-    <input type="url" class="thumbnail-url" placeholder="Thumbnail URL (optional)">
     <button type="button" class="delete-video-btn" onclick="window.deleteVideoEntry(this)">Delete Video</button>
   `;
   
@@ -214,13 +212,13 @@ function handleCourseSubmit(e) {
   const upiId = document.getElementById('upiId').value;
   const coursePrice = document.getElementById('coursePrice').value;
   const courseId = document.getElementById('courseId').value;
+  const courseThumbnail = document.getElementById('courseThumbnail').value;
   
   const videos = Array.from(document.getElementsByClassName('video-entry'))
-    .filter(entry => !entry.classList.contains('deleted'))  // Only include non-deleted entries
+    .filter(entry => !entry.classList.contains('deleted'))
     .map(entry => ({
       name: entry.querySelector('.video-name').value,
-      url: entry.querySelector('.video-url').value,
-      thumbnail: entry.querySelector('.thumbnail-url').value
+      url: entry.querySelector('.video-url').value
     }));
   
   if (courseId) {
@@ -230,6 +228,7 @@ function handleCourseSubmit(e) {
       courses[courseIndex] = {
         ...courses[courseIndex],
         name: courseName,
+        thumbnail: courseThumbnail,
         videos,
         upiId,
         price: coursePrice
@@ -240,6 +239,7 @@ function handleCourseSubmit(e) {
     const newCourse = {
       id: Date.now(),
       name: courseName,
+      thumbnail: courseThumbnail,
       videos,
       upiId,
       price: coursePrice
@@ -285,18 +285,30 @@ function renderCourses() {
   
   coursesGrid.innerHTML = courses.map(course => {
     const progressPercentage = updateProgressBar(course);
+    
+    // Properly escape the course name for use in SVG
+    const escapedName = course.name.replace(/[<>&"']/g, c => {
+      return {
+        '<': '&lt;',
+        '>': '&gt;',
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&apos;'
+      }[c];
+    });
+    
+    const thumbnailHtml = course.thumbnail ? 
+      `<img src="${course.thumbnail}" alt="${escapedName}" class="course-thumbnail" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;course-thumbnail-fallback&quot;>${escapedName}</div>'">` :
+      `<div class="course-thumbnail-fallback">${escapedName}</div>`;
+    
     return `
       <div class="course-card" onclick="window.viewCourse(${course.id})">
         <div style="position: relative;">
-          <img 
-            src="${course.videos[0]?.thumbnail || 'https://via.placeholder.com/300x200'}" 
-            alt="${course.name}" 
-            class="course-thumbnail"
-          >
+          ${thumbnailHtml}
           <div class="progress-bar" style="width: ${progressPercentage}%"></div>
         </div>
         <div class="course-info">
-          <h2 class="course-title">${course.name}</h2>
+          <h2 class="course-title">${escapedName}</h2>
           <p class="course-price">₹${course.price}</p>
         </div>
       </div>
@@ -375,7 +387,42 @@ window.toggleLights = function() {
   }
 };
 
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  const themeText = document.querySelector('.theme-text');
+  
+  if (theme === 'dark') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+    themeText.textContent = 'Light Mode';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+    themeText.textContent = 'Dark Mode';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', toggleTheme);
+  
   const resizableElements = document.querySelectorAll('.resizable');
   
   resizableElements.forEach(element => {
